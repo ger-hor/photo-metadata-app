@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo with Metadata</title>
+    <script src="https://cdn.jsdelivr.net/npm/piexifjs"></script>
+</head>
+<body>
+    <h1>Take Photo with Voice Transcription Metadata</h1>
+
+    <!-- Capture Photo -->
+    <input type="file" id="photoInput" accept="image/*" capture="environment">
+    <br><br>
+
+    <!-- Start Transcription -->
+    <button onclick="startTranscription()">🎙️ Start Transcription</button>
+    <p id="transcription">Transcription: None</p>
+    <br><br>
+
+    <!-- Embed Metadata & Save -->
+    <button onclick="embedMetadata()">📸 Embed Metadata & Save</button>
+    <a id="downloadLink" style="display:none;">Download Modified Image</a>
+    <p id="status">Status: Ready</p>
+
+    <script>
+        let transcription = '';
+
+        // ✅ Start Voice Transcription
+        function startTranscription() {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                transcription = event.results[0][0].transcript;
+                document.getElementById('transcription').textContent = `Transcription: ${transcription}`;
+            };
+
+            recognition.onerror = (err) => {
+                alert(`Speech recognition error: ${err.error}`);
+            };
+
+            recognition.start();
+        }
+
+        // ✅ Embed Metadata into the Image and Save
+        function embedMetadata() {
+            const photoInput = document.getElementById('photoInput');
+            if (!photoInput.files.length) {
+                alert('Please upload a photo first!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const base64Image = event.target.result;
+
+                // ✅ Add Metadata to the Image
+                const exifData = {
+                    "0th": {
+                        [piexif.ImageIFD.ImageDescription]: transcription || "No transcription provided."
+                    }
+                };
+
+                const exifBytes = piexif.dump(exifData);
+                const modifiedImage = piexif.insert(exifBytes, base64Image);
+
+                // ✅ Convert Base64 to Blob
+                const binaryData = atob(modifiedImage.split(',')[1]);
+                const arrayBuffer = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                    arrayBuffer[i] = binaryData.charCodeAt(i);
+                }
+                const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+                // ✅ Create a Download Link
+                const url = URL.createObjectURL(blob);
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.download = 'photo_with_metadata.jpg';
+                downloadLink.style.display = 'block';
+                downloadLink.innerText = '✅ Download Modified Image';
+                document.getElementById('status').textContent = "✅ Image saved with metadata!";
+            };
+            reader.readAsDataURL(photoInput.files[0]);
+        }
+    </script>
+</body>
+</html>
