@@ -1,6 +1,6 @@
-PICTEXT
+photo-metadata-app
 Overview
-PICTEXT is a mobile application that seamlessly combines photography and voice-to-text functionality. It allows users to capture photos while simultaneously recording and transcribing spoken words, creating images with integrated text captions in real-time.
+PHOTO-METADATA-APP is a mobile application that seamlessly combines photography and voice-to-text functionality. It allows users to capture photos while simultaneously recording and transcribing spoken words, creating images with integrated text captions in real-time.
 Key Features
 
 Simultaneous photo capture and voice recording
@@ -13,7 +13,7 @@ Advanced text and image search functionality
 
 How It Works
 
-Open the PICTEXT camera interface
+Open the PHOTO-METADATA-APP camera interface
 As you take a picture, speak the words you want to capture
 The app automatically transcribes your voice
 Your photo is saved with the transcribed text embedded
